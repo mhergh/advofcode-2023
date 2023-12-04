@@ -1,35 +1,28 @@
-# $ARGV[0] == input file - this is just an extension of the 1half - but the part from 1half has been slightly optimized and a little more "perl-ish" edited ...
+#!/usr/bin/perl
+# $ARGV[0] == input file
 
-BEGIN{
-  %m=("zero"=>0,"one"=>1,"two"=>2,"three"=>3,"four"=>4,"five"=>5,"six"=>6,"seven"=>7,"eight"=>8,"nine"=>9,);
-  $reDigit=join("|", sort(keys(%m)))
-}
+my %m=("zero"=>0,"one"=>1,"two"=>2,"three"=>3,"four"=>4,"five"=>5,"six"=>6,"seven"=>7,"eight"=>8,"nine"=>9,);
+my $reDigit=join("|", sort(keys(%m)));
+my $sum=0;
 
-END{
-	print "sum==<$s>\n"
-}
-
-#MAIN
 open(my $inp, '<', $ARGV[0]) or die "Failed to open $ARGV[0]: $!\n";
 
 while(<$inp>){
+  chomp;
+
   # 1. translate only the relevant digitwords first
-  s/^[^\d]*?($reDigits)/$m{$1}/i;
-  s/($reDigits)[^\d]*?$/$m{$1}/i;
+  print "before--><$_>\n";
+  s/^[^\d]*?($reDigit)/$m{$1}${1}/i;
+  s/^(.*)($reDigit)[^\d]*?$/$1$2$m{$2}/i;
+  print "after--><$_>\n";
+
   # 2. extract the relevant number from the line and add it to the sum
   if(/^[^\d]*(\d)/){
-  	$d1=$1;
+    $d1=$1;
     $d2=$1 if /(\d)[^\d]*$/;
-  	$s+="$d1$d2"
+    $s+="$d1$d2";
   };
 }
 
-# sample runned on hergmar@mhergh-acer4k:~$ where the input is ~/advofcode_real_input_20231201.txt -->
-# perl -ne 'if(/^[^\d]*(\d)/){$d1=$1;if(/(\d)[^\d]*$/){$d2=$1}else{$d2=$d1};$s+="$d1$d2"};END{print "sum==<$s>\n"}' advofcode_real_input_20231201.txt
 
-# perl -ne 'if(//){};END{print "sum=<$s>\n"}' advofcode_real_input_20231201.txt
-
-# Output:
-# sum==<54239>
-
-# perl -e 's/\d/-/g' <file>
+print "sum==<$s>\n";
